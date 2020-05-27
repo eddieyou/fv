@@ -1,0 +1,6 @@
+# github.com/go-chi/chi v4.1.1+incompatible
+## explicit
+github.com/go-chi/chi
+github.com/go-chi/chi/middleware
+# golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2
+## explicit
