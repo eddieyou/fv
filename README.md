@@ -1,6 +1,8 @@
 ## Prerequisite
 Only *Docker* is required to run the demo.
-Postgresql server will be started in docker on port 5432, with db username: `postgres` and password: `fvpgsecret`
+
+Postgresql server will be started in docker on port 5432, with db username: `postgres` and password: `fvpgsecret`.
+
 The local http server will be build and started in docker on port 3000, with basic auth username: `fv` and password: `fvpass`.
 
 ## Demo
@@ -67,16 +69,20 @@ POST /s/{specId}
 response:
 ```json
 {
-    "id": "3",
-    "name": "Cookie",
-    "valid": true,
-    "count": 103
+    "Id": 3,
+    "Content": {
+        "name": "Cookie",
+        "valid": true,
+        "count": 103
+    }
 }
 ```
 
 ### Query
 Assume only query by single column and string is the only supported type.
+
 The response is an array, since we have no way to specify a unique id.
+
 Note: without column and value all rows will be returned.
 
 GET /s/{specId}/{column}/{value}
@@ -90,17 +96,21 @@ response:
 ```json
 [
     {
-        "id": "1",
-        "name": "Apple",
-        "valid": true,
-        "count": 1 
+        "Id": 1,
+        "Content": {
+            "name": "Apple",
+            "valid": true,
+            "count": 1 
+        }
     }
 ]
 ```
 
 ### Modify (not implemented)
 This patches the row with changes.
+
 This is not implemented as there would need additional api to unset a field.
+
 Instead see below POST method, where a full row is updated.
 
 PATCH /s/{specId}/r/{rowId}
@@ -113,15 +123,18 @@ PATCH /s/{specId}/r/{rowId}
 response:
 ```json
 {
-    "id": "2",
-    "name": "Banana",
-    "valid": true,
-    "count": 12
+    "Id": 2,
+    "Content": {
+        "name": "Banana",
+        "valid": true,
+        "count": 12
+    }
 }
 ```
 
 ### Modify the row
 *Warning* Not concurrency safe.
+
 We could implement optimistic lock for concurrency, i.e. include a "version" field. But this is out of scope.
 
 POST /s/{specId}/r/{rowId}
@@ -136,8 +149,10 @@ POST /s/{specId}/r/{rowId}
 response:
 ```json
 {
-    "id": "2",
-    "name": "Banana",
-    "valid": true,
-    "count": 12
+    "Id": 2,
+    "Content": {
+        "name": "Banana",
+        "valid": true,
+        "count": 12
+    }
 }
