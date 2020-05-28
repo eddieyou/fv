@@ -19,4 +19,4 @@ docker run --rm -i \
     --network=host \
     -e POSTGRES_PASSWORD=fvpgsecret \
     postgres \
-    psql -h localhost -U postgres < init.sql
+    psql -h localhost -U postgres < scripts/init.sql

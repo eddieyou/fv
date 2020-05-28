@@ -13,4 +13,4 @@ install:
 	go install -mod vendor
 
 build:
-	go build ./...
+	go build ./cmd/fv

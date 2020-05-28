@@ -1,3 +1,35 @@
+## Prerequisite
+Only *Docker* is required to run the demo.
+Postgresql server will be started in docker on port 5432, with db username: `postgres` and password: `fvpgsecret`
+The local http server will be build and started in docker on port 3000, with basic auth username: `fv` and password: `fvpass`.
+
+## Demo
+```bash
+# start the db first
+./scripts/start-db.sh
+
+# start the http server
+./scripts/start.sh
+
+# run the demo
+# 1. create some data
+curl -i -XPOST -d '{"name":"Apple", "valid": true, "count": 1}' http://fv:fvpass@localhost:3000/s/1
+curl -i -XPOST -d '{"name":"Banana", "valid": false, "count": -12}' http://fv:fvpass@localhost:3000/s/1
+
+# 2. do some query
+curl -i -XGET http://fv:fvpass@localhost:3000/s/1/name/Apple
+
+# 3. insert data
+curl -i -XPOST -d '{"name":"Cookie", "valid": true, "count": 103}' http://fv:fvpass@localhost:3000/s/1
+
+# 4. update data
+# this is different from the requirement, need to do a query to get the rowId first
+curl -i -XGET http://fv:fvpass@localhost:3000/s/1/name/Banana
+# assume the id is 2, we can now do the update:
+curl -i -XPOST -d '{"name":"Banana", "valid": true, "count": 12}' http://fv:fvpass@localhost:3000/s/1/r/2
+
+```
+
 ## Authentication
 Basic Auth is used for simplicity, use username: `fv` and password: `fvpass`.
 
@@ -23,7 +55,7 @@ Content-Length: 0
 ### Insert
 *Warning* Not idempotent. If we want idempotent we can included a idempotent key in the header, or the call need to provide a uniqueID from caller.
 
-POST /d/{id}
+POST /s/{specId}
 ```json
 {
     "name": "Cookie",
@@ -43,15 +75,15 @@ response:
 ```
 
 ### Query
-Assume only query by single column.
+Assume only query by single column and string is the only supported type.
 The response is an array, since we have no way to specify a unique id.
 Note: without column and value all rows will be returned.
 
-GET /d/{id}/{column}/{value}
+GET /s/{specId}/{column}/{value}
 
 example:
 ```
-GET /d/1/name/Apple
+GET /s/1/name/Apple
 ```
 
 response:
@@ -71,7 +103,7 @@ This patches the row with changes.
 This is not implemented as there would need additional api to unset a field.
 Instead see below POST method, where a full row is updated.
 
-PATCH /d/{id}/r/{row_id}
+PATCH /s/{specId}/r/{rowId}
 ```json
 {
     "valid": true,
@@ -92,7 +124,7 @@ response:
 *Warning* Not concurrency safe.
 We could implement optimistic lock for concurrency, i.e. include a "version" field. But this is out of scope.
 
-POST /d/{id}/r/{row_id}
+POST /s/{specId}/r/{rowId}
 ```json
 {
     "name": "Banana",
