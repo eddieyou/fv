@@ -12,7 +12,14 @@ import (
 )
 
 type Handler struct {
-	Store *store.Store
+	Store Store
+}
+
+type Store interface {
+	Create(ctx context.Context, specId string, record store.Record) (*store.Data, error)
+	Update(ctx context.Context, id int64, record store.Record) (*store.Data, error)
+	Get(ctx context.Context, specId string, key string, value string) ([]*store.Data, error)
+	Validate(ctx context.Context, specId string, record store.Record) error
 }
 
 func (h *Handler) HandleCreate(w http.ResponseWriter, r *http.Request) {
